@@ -1,6 +1,7 @@
 # This code creates an organization in the Terraform cloud and multiple
-# workspaces as defined by corresponding environment variables. The environment
-# variables required for this script are as follows:
+# workspaces as defined by corresponding environment variables. It also creates
+# a variable set for each workspace and makes variables in each of them. The
+# environment variables required for this script are as follows: 
 #
 # `TF_API_TOKEN`: A user token which has access to create organizations.
 # `TF_CLOUD_ORGANIZATION`: Desired name of your organization.
@@ -11,12 +12,18 @@
 # `environments` = ['DEV', 'TEST', 'PROD'], the following variables are required:
 # `TF_WORKSPACE_DEV`, `TF_WORKSPACE_TEST`, and `TF_WORKSPACE_PROD`.
 #
+# `AWS_ACCESS_KEY_ID`: An access key to AWS.
+# `AWS_SECRET_ACCESS_KEY`: The "password" to the access key.
+#
 # Sample usage:
 # $ python3 build_tfc.py
 # Organization named 'testing-organization' created.
-# Workspace named 'workspace_dev' created.
-# Workspace named 'workspace_test' created.
-# Workspace named 'workspace_prod' created.
+# Workspace named 'workspace_dev' with ID 'ws-123456789abcdea' created.
+# Variable set named 'variables_dev' created under workspace 'workspace_dev'.
+# Workspace named 'workspace_test' with ID 'ws-123456789abcdeb' created.
+# Variable set named 'variables_test' created under workspace 'workspace_test'.
+# Workspace named 'workspace_prod' with ID 'ws-123456789abcdec' created.
+# Variable set named 'variables_prod' created under workspace 'workspace_prod'.
 
 import os
 
@@ -39,6 +46,9 @@ if __name__ == '__main__':
         tf_token = os.environ['TF_API_TOKEN']
         tf_organization_name = os.environ['TF_CLOUD_ORGANIZATION']
         tf_email = os.environ['TF_EMAIL']
+
+        aws_key = os.environ['AWS_ACCESS_KEY_ID']
+        aws_secret_key = os.environ['AWS_SECRET_ACCESS_KEY']
     except KeyError as ke:
         # Log the missing environment variable and exit.
         print(f'Unable to find required environment variable: {ke}')
@@ -126,3 +136,70 @@ if __name__ == '__main__':
                 # Log that the workspace was created.
                 print(
                     f"Workspace named '{tf_workspace_name}' with ID '{workspace_id}' created.")
+
+        # Create variable set for the workspace.
+        varset_name = f"variables_{environment.lower()}"
+        varset_desc = f"Automatically created variable set for {environment} environment."
+
+        # Payload for making API call to create a workspace.
+        create_varset_payload = {
+            "data": {
+                "type": "varsets",
+                "attributes": {
+                    "name": varset_name,
+                    "description": varset_desc,
+                    "global": False,
+                },
+                "relationships": {
+                    "workspaces": {
+                        "data": [
+                            {
+                                "id": workspace_id,
+                                "type": "workspaces"
+                            }
+                        ]
+                    },
+                    "vars": {
+                        "data": [
+                            {
+                                "type": "vars",
+                                "attributes": {
+                                    "key": 'AWS_ACCESS_KEY_ID',
+                                    "value": aws_key,
+                                    "category": "env",
+                                    "sensitive": True
+                                }
+                            },
+                            {
+                                "type": "vars",
+                                "attributes": {
+                                    "key": 'AWS_SECRET_ACCESS_KEY',
+                                    "value": aws_secret_key,
+                                    "category": "env",
+                                    "sensitive": True
+                                }
+                            },
+                        ]
+                    },
+                }
+            }
+        }
+
+        # Try to create a variable set.
+        try:
+            api.var_sets.create(create_varset_payload)
+        except TFCHTTPUnclassified as invalid_token_error:
+            # Log the error and say that variable set couldn't be created.
+            print(
+                f"Failed to create variable set named '{varset_name}'.")
+            print(invalid_token_error)
+            exit(5)
+        except TFCHTTPUnprocessableEntity as name_exists_error:
+            # Log the error and say that variable set couldn't be created.
+            print(
+                f"Failed to create variable set named '{varset_name}'.")
+            print(name_exists_error)
+            exit(5)
+        else:
+            print(
+                f"Variable set named '{varset_name}' created under workspace '{tf_workspace_name}'.")
