@@ -15,6 +15,9 @@ jobs:
               run: docker build . --tag tfcbuilder
               working-directory: tfcbuilder
 
+            - name: Display contents
+              run: ls -al
+
             - name: Run Docker container
               run: docker run --env-file=".env.tfcbuilder" tfcbuilder
               working-directory: tfcbuilder
