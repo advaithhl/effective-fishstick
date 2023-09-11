@@ -17,6 +17,7 @@ jobs:
 
             - name: Run Docker container
               run: docker run --env-file=".env.tfcbuilder" tfcbuilder
+              working-directory: tfcbuilder
               env:
                 TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
                 TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
