@@ -1,7 +1,7 @@
 # This code creates an organization in the Terraform cloud and multiple
 # workspaces as defined by corresponding environment variables. It also creates
 # a variable set for each workspace and makes variables in each of them. The
-# environment variables required for this script are as follows: 
+# environment variables required for this script are as follows:
 #
 # `TF_API_TOKEN`: A user token which has access to create organizations.
 # `TF_CLOUD_ORGANIZATION`: Desired name of your organization.
@@ -37,8 +37,6 @@ environments = [
     'PROD',
 ]
 
-# Dynamically populated `dict` containing workspaces and their IDs.
-workspace_ids = {}
 
 if __name__ == '__main__':
     # Try to fetch the required environment variables.
@@ -88,10 +86,6 @@ if __name__ == '__main__':
         # workspace for future calls (like creating workspaces).
         api.set_org(tf_organization_name)
 
-    # Dynamically populated `dict` containing workspaces and their IDs.
-    # Used for creating workspace-specific environment variables.
-    workspace_ids = {}
-
     # Loop for each environment.
     for environment in environments:
         # Try to fetch the name of the environment-specific workspace.
@@ -129,9 +123,8 @@ if __name__ == '__main__':
                 print(name_exists_error)
                 exit(4)
             else:
-                # Get the workspace ID and save to `workspace_ids` dict.
+                # Get the workspace ID.
                 workspace_id = response['data']['id']
-                workspace_ids[environment] = workspace_id
 
                 # Log that the workspace was created.
                 print(
