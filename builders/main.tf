@@ -7,7 +7,9 @@ terraform {
   }
 }
 
-provider "aws" {}
+provider "aws" {
+  region = "ap-south-1"
+}
 
 data "aws_ami" "al2023" {
   filter {
