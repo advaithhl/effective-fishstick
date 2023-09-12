@@ -3,8 +3,6 @@ name: "Terraform Plan"
 on:
   pull_request:
 
-environment: testenvironment
-
 env:
   TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
@@ -15,6 +13,7 @@ jobs:
   terraform:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
+    environment: testenvironment
     permissions:
       contents: read
       pull-requests: write
