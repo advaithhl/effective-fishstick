@@ -25,7 +25,6 @@ jobs:
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
         id: plan-upload
         with:
-          organization: ${{ env.TF_CLOUD_ORGANIZATION }}
           workspace: ${{ env.TF_WORKSPACE }}
           directory: ${{ env.CONFIG_DIRECTORY }}
           speculative: true
@@ -34,7 +33,6 @@ jobs:
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.4
         id: plan-run
         with:
-          organization: ${{ env.TF_CLOUD_ORGANIZATION }}
           workspace: ${{ env.TF_WORKSPACE }}
           configuration_version: ${{ steps.plan-upload.outputs.configuration_version_id }}
           plan_only: true
@@ -43,7 +41,6 @@ jobs:
         uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.4
         id: plan-output
         with:
-          organization: ${{ env.TF_CLOUD_ORGANIZATION }}
           plan: ${{ fromJSON(steps.plan-run.outputs.payload).data.relationships.plan.data.id }}
 
       - name: Update PR
