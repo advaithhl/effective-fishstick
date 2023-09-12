@@ -2,7 +2,8 @@ name: "Terraform Plan - Production"
 
 on:
   pull_request:
-    - main
+    branches:
+      - main
 
 env:
   TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
