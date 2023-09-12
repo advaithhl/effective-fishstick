@@ -5,7 +5,6 @@ on: workflow_dispatch
 jobs:
     build:
         runs-on: ubuntu-latest
-        environment: testenvironment
 
         steps:
             - name: Checkout code
