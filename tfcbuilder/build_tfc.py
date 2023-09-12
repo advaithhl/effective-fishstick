@@ -6,11 +6,11 @@
 # `TF_API_TOKEN`: A user token which has access to create organizations.
 # `TF_CLOUD_ORGANIZATION`: Desired name of your organization.
 # `TF_EMAIL`: Desired email to be assigned to your organization.
-# `TF_WORKSPACE_environment`: Desired name of your workspace for each
-# environment. There must be a corresponding `TF_WORKSPACE_environment` for
-# each item in the `environments` list defined in code. For example, if
-# `environments` = ['DEV', 'TEST', 'PROD'], the following variables are required:
-# `TF_WORKSPACE_DEV`, `TF_WORKSPACE_TEST`, and `TF_WORKSPACE_PROD`.
+# `TF_WORKSPACE`: Desired name of your workspace. A workspace will be created
+# for each environment listed in code. For example, if `TF_WORKSPACE` =
+# `myworkspace` and `environments` = ['DEV', 'TEST', 'PROD'], the following
+# workspaces will be created: myworkspace_dev, myworkspace_test, and
+# myworkspace_prod.
 #
 # `AWS_ACCESS_KEY_ID`: An access key to AWS.
 # `AWS_SECRET_ACCESS_KEY`: The "password" to the access key.
@@ -90,12 +90,16 @@ if __name__ == '__main__':
     for environment in environments:
         # Try to fetch the name of the environment-specific workspace.
         try:
-            tf_workspace_name = os.getenv(f'TF_WORKSPACE_{environment}')
+            tf_workspace_generic_name = os.environ['TF_WORKSPACE']
         except KeyError as ke:
             # Log the missing environment variable and exit.
             print(f'Unable to find required environment variable: {ke}')
             exit(3)
         else:
+            # Dynamically name workspace for each environment.
+            tf_workspace_name = tf_workspace_generic_name + '_' + environment
+            tf_workspace_name = tf_workspace_name.lower()
+
             # Payload for making API call to create a workspace.
             create_workspace_payload = {
                 "data": {

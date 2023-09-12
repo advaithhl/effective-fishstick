@@ -22,8 +22,6 @@ jobs:
                 TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
                 TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
                 TF_EMAIL: ${{ vars.TF_EMAIL }}
-                TF_WORKSPACE_DEV: ${{ vars.TF_WORKSPACE_DEV }}
-                TF_WORKSPACE_TEST: ${{ vars.TF_WORKSPACE_TEST }}
-                TF_WORKSPACE_PROD: ${{ vars.TF_WORKSPACE_PROD }}
+                TF_WORKSPACE: ${{ vars.TF_WORKSPACE }}
                 AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                 AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
