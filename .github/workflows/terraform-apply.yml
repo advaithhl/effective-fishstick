@@ -27,6 +27,7 @@ jobs:
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
         id: apply-upload
         with:
+          organization: ${{ env.TF_CLOUD_ORGANIZATION }}
           workspace: ${{ env.TF_WORKSPACE }}
           directory: ${{ env.CONFIG_DIRECTORY }}
 
@@ -34,6 +35,7 @@ jobs:
         uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.4
         id: apply-run
         with:
+          organization: ${{ env.TF_CLOUD_ORGANIZATION }}
           workspace: ${{ env.TF_WORKSPACE }}
           configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
 
