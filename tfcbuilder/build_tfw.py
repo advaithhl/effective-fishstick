@@ -93,7 +93,7 @@ if __name__ == '__main__':
     varset_name = f"variables_{environment.lower()}"
     varset_desc = f"Automatically created variable set for {environment} environment."
 
-    # Payload for making API call to create a workspace.
+    # Payload for making API call to create a variable set.
     create_varset_payload = {
         "data": {
             "type": "varsets",
