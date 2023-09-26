@@ -63,6 +63,7 @@ jobs:
 
             - name: Create development workspace
               run: python build_tfw.py
+              working-directory: tfcbuilder
 
     # This job creates a test workspace in `TF_CLOUD_ORGANIZATION`.
     build_test_workspace:
@@ -93,6 +94,7 @@ jobs:
 
             - name: Create test workspace
               run: python build_tfw.py
+              working-directory: tfcbuilder
 
     # This job creates a production workspace in `TF_CLOUD_ORGANIZATION`.
     build_prod_workspace:
@@ -123,3 +125,4 @@ jobs:
 
             - name: Create production workspace
               run: python build_tfw.py
+              working-directory: tfcbuilder
