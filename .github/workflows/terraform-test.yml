@@ -80,6 +80,7 @@ jobs:
     name: "Terraform Apply"
     runs-on: ubuntu-latest
     environment: test
+    needs: plan
     permissions:
       contents: read
     steps:
