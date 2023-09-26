@@ -62,9 +62,9 @@ jobs:
           # Server port, default 25:
           server_port: 465
           # Optional (recommended) mail server username:
-          username: ${{ secrets.MAIL_USERNAME }}
+          username: ${{ secrets.TF_PLAN_MAIL_USERNAME }}
           # Optional (recommended) mail server password:
-          password: ${{ secrets.MAIL_PASSWORD }}
+          password: ${{ secrets.TF_PLAN_MAIL_PASSWORD }}
           # Required mail subject:
           subject: "Terraform Cloud Plan - ${{ github.ref_name }} (${{ steps.vars.outputs.sha_short }})" 
           # Required recipients' addresses:

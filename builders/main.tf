@@ -28,3 +28,8 @@ resource "aws_instance" "server1" {
   ami           = data.aws_ami.al2023.id
   instance_type = data.aws_ec2_instance_type.al2023.instance_type
 }
+
+resource "aws_ec2_instance_state" "server1_state" {
+  instance_id = aws_instance.server1
+  state       = "stopped"
+}
