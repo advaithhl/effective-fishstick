@@ -2,27 +2,124 @@ name: Build and configure Terraform Cloud (TFC)
 
 on: workflow_dispatch
 
+# To be defined at repository level.
+env:
+    TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
+    TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
+
 jobs:
-    build:
+    # This job creates a Terraform organization.
+    build_organization:
+        name: Build Terraform Organization
         runs-on: ubuntu-latest
+
+        # To be defined at repository level.
+        env:
+            TF_EMAIL: ${{ vars.TF_EMAIL }}
 
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Build Docker image
-              run: docker build . --tag tfcbuilder
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+
+            - name: Install requirements
+              run: pip install -r requirements.txt
               working-directory: tfcbuilder
 
-            - name: Run Docker container
-              run: docker run --env-file=".env.tfcbuilder" tfcbuilder
+            - name: Create TFC organization
+              run: python build_tfo.py
               working-directory: tfcbuilder
-              env:
-                TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
-                TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
-                TF_EMAIL: ${{ vars.TF_EMAIL }}
-                TF_WORKSPACE_DEV: ${{ vars.TF_WORKSPACE_DEV }}
-                TF_WORKSPACE_TEST: ${{ vars.TF_WORKSPACE_TEST }}
-                TF_WORKSPACE_PROD: ${{ vars.TF_WORKSPACE_PROD }}
-                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    # This job creates a development workspace in `TF_CLOUD_ORGANIZATION`.
+    build_dev_workspace:
+        name: Build development workspace
+        needs: build_organization
+        runs-on: ubuntu-latest
+        environment: development
+
+        # To be defined at environment level.
+        env:
+            ENVIRONMENT_NAME: ${{ vars.ENVIRONMENT_NAME }}
+            TF_WORKSPACE: ${{ vars.TF_WORKSPACE_DEV }} # Defined at repository level.
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+
+            - name: Install requirements
+              run: pip install -r requirements.txt
+              working-directory: tfcbuilder
+
+            - name: Create development workspace
+              run: python build_tfw.py
+
+    # This job creates a test workspace in `TF_CLOUD_ORGANIZATION`.
+    build_test_workspace:
+        name: Build test workspace
+        needs: build_organization
+        runs-on: ubuntu-latest
+        environment: test
+
+        # To be defined at environment level.
+        env:
+            ENVIRONMENT_NAME: ${{ vars.ENVIRONMENT_NAME }}
+            TF_WORKSPACE: ${{ vars.TF_WORKSPACE_TEST }} # Defined at repository level.
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+
+            - name: Install requirements
+              run: pip install -r requirements.txt
+              working-directory: tfcbuilder
+
+            - name: Create test workspace
+              run: python build_tfw.py
+
+    # This job creates a production workspace in `TF_CLOUD_ORGANIZATION`.
+    build_prod_workspace:
+        name: Build production workspace
+        needs: build_organization
+        runs-on: ubuntu-latest
+        environment: production
+
+        # To be defined at environment level.
+        env:
+            ENVIRONMENT_NAME: ${{ vars.ENVIRONMENT_NAME }}
+            TF_WORKSPACE: ${{ vars.TF_WORKSPACE_PROD }} # Defined at repository level.
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+
+            - name: Install requirements
+              run: pip install -r requirements.txt
+              working-directory: tfcbuilder
+
+            - name: Create production workspace
+              run: python build_tfw.py
