@@ -76,11 +76,18 @@ jobs:
           # Optional HTML body read from file:
           html_body: file://builders/emails/tfcplanoutput.html
 
+    outputs:
+      to_add: ${{ steps.plan-output.outputs.add }}
+      to_change: ${{ steps.plan-output.outputs.change }}
+      to_destroy: ${{ steps.plan-output.outputs.destroy }}
+      run_link: ${{ steps.plan-run.outputs.run_link }}
+
   apply:
     name: "Terraform Apply"
     runs-on: ubuntu-latest
     environment: test
     needs: plan
+    if: ${{ needs.plan.outputs.to_add != 0 || needs.plan.outputs.to_change != 0 ||needs.plan.outputs.to_destroy != 0}}
     permissions:
       contents: read
     steps:
