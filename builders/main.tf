@@ -30,6 +30,6 @@ resource "aws_instance" "server1" {
 }
 
 resource "aws_ec2_instance_state" "server1_state" {
-  instance_id = aws_instance.server1
+  instance_id = aws_instance.server1.id
   state       = "stopped"
 }
