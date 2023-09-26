@@ -1,4 +1,4 @@
-name: "Terraform Plan - Test"
+name: "Terraform - Test"
 
 on:
   push:
@@ -7,19 +7,21 @@ on:
 
 env:
   TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
-  TF_EMAIL: ${{ vars.TF_EMAIL }}
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
   TF_WORKSPACE: ${{ vars.TF_WORKSPACE_TEST }}
   CONFIG_DIRECTORY: "./builders/"
-  EMAILS_DIRECTORY: "./builders/emails/"
 
 jobs:
-  terraform:
+  plan:
     name: "Terraform Plan"
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write
+
+    env:
+      TF_EMAIL: ${{ vars.TF_EMAIL }}
+      EMAILS_DIRECTORY: "./builders/emails/"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -66,10 +68,42 @@ jobs:
           # Optional (recommended) mail server password:
           password: ${{ secrets.TF_PLAN_MAIL_PASSWORD }}
           # Required mail subject:
-          subject: "Terraform Cloud Plan - ${{ github.ref_name }} (${{ steps.vars.outputs.sha_short }})" 
+          subject: "Terraform Cloud Plan - ${{ github.ref_name }} (${{ steps.vars.outputs.sha_short }})"
           # Required recipients' addresses:
           to: ${{ env.TF_EMAIL }}
           # Required sender full name (address can be skipped):
           from: Terraform planner
           # Optional HTML body read from file:
           html_body: file://builders/emails/tfcplanoutput.html
+
+  apply:
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    environment: test
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload Configuration
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.4
+        id: apply-upload
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.CONFIG_DIRECTORY }}
+
+      - name: Create Apply Run
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.4
+        id: apply-run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration_version: ${{ steps.apply-upload.outputs.configuration_version_id }}
+
+      - name: Apply
+        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.4
+        if: fromJSON(steps.apply-run.outputs.payload).data.attributes.actions.IsConfirmable
+        id: apply
+        with:
+          run: ${{ steps.apply-run.outputs.run_id }}
+          comment: "Apply Run from GitHub Actions CI ${{ github.sha }}"
