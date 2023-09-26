@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: test
     needs: plan
-    if: ${{ needs.plan.outputs.to_add != 0 || needs.plan.outputs.to_change != 0 ||needs.plan.outputs.to_destroy != 0}}
+    if: ${{ needs.plan.outputs.to_add != 0 || needs.plan.outputs.to_change != 0 || needs.plan.outputs.to_destroy != 0 }}
     permissions:
       contents: read
     steps:
