@@ -9,7 +9,7 @@ env:
   TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
   TF_WORKSPACE: ${{ vars.TF_WORKSPACE_PROD }}
-  CONFIG_DIRECTORY: "./builders/"
+  CONFIG_DIRECTORY: "./builders/infra"
 
 jobs:
   plan:
