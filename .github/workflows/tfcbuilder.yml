@@ -28,11 +28,11 @@ jobs:
 
             - name: Install requirements
               run: pip install -r requirements.txt
-              working-directory: tfcbuilder
+              working-directory: builders/tfcbuilder
 
             - name: Create TFC organization
               run: python build_tfo.py
-              working-directory: tfcbuilder
+              working-directory: builders/tfcbuilder
 
     # This job creates a development workspace in `TF_CLOUD_ORGANIZATION`.
     build_dev_workspace:
@@ -59,11 +59,11 @@ jobs:
 
             - name: Install requirements
               run: pip install -r requirements.txt
-              working-directory: tfcbuilder
+              working-directory: builders/tfcbuilder
 
             - name: Create development workspace
               run: python build_tfw.py
-              working-directory: tfcbuilder
+              working-directory: builders/tfcbuilder
 
     # This job creates a test workspace in `TF_CLOUD_ORGANIZATION`.
     build_test_workspace:
@@ -90,11 +90,11 @@ jobs:
 
             - name: Install requirements
               run: pip install -r requirements.txt
-              working-directory: tfcbuilder
+              working-directory: builders/tfcbuilder
 
             - name: Create test workspace
               run: python build_tfw.py
-              working-directory: tfcbuilder
+              working-directory: builders/tfcbuilder
 
     # This job creates a production workspace in `TF_CLOUD_ORGANIZATION`.
     build_prod_workspace:
@@ -121,8 +121,8 @@ jobs:
 
             - name: Install requirements
               run: pip install -r requirements.txt
-              working-directory: tfcbuilder
+              working-directory: builders/tfcbuilder
 
             - name: Create production workspace
               run: python build_tfw.py
-              working-directory: tfcbuilder
+              working-directory: builders/tfcbuilder
