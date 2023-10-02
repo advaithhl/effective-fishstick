@@ -1,3 +1,4 @@
+boto3==1.28.57
 PyNaCl==1.5.0
 terrasnek==0.1.13
 requests>=2.21.0
