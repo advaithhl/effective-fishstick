@@ -1,5 +1,5 @@
 from services import terraform
 
 
-def lambda_handler(event, context):
+def main():
     terraform.rotatekeys()
