@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from os import environ as os_environ
 
-from github import set_repo_secret as github_set_repo_secret
+from keyrotators.backends.github import set_repo_secret as github_set_repo_secret
 from terrasnek.api import TFC
 from terrasnek.exceptions import TFCHTTPUnauthorized
 

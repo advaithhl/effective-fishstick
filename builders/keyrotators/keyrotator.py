@@ -1,4 +1,4 @@
-from services import terraform
+from providers import terraform
 
 
 def main():
