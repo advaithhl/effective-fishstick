@@ -1,5 +1,6 @@
 from os import environ as os_environ
 
+import backoff
 import boto3
 import boto3.session
 from botocore.exceptions import ClientError
@@ -33,6 +34,7 @@ def _delete_deactivated_keys(iam_client):
                 AccessKeyId=access_key_id)
 
 
+@backoff.on_exception(backoff.expo, ClientError, max_time=30)
 def _get_username(iam_client):
     response = iam_client.get_user()
     return response['User']['UserName']
