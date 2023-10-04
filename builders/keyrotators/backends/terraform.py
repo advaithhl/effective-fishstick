@@ -20,7 +20,7 @@ def _get_workspace_id(api, workspace_name):
 
 
 def _get_varset_vars_id(api, workspace_id):
-    var_sets = api.var_set.list_for_workspace(workspace_id)
+    var_sets = api.var_sets.list_for_workspace(workspace_id)
     # Only one variable set is assocated to one workspace.
     var_set = var_sets['data'][0]
     ret_value = [var_set['id']]
