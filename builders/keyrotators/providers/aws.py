@@ -6,6 +6,8 @@ import boto3.session
 from botocore.exceptions import ClientError
 from keyrotators.backends.github import \
     set_environment_secret as github_set_environment_secret
+from keyrotators.backends.terraform import \
+    update_aws_keys as terraform_update_aws_keys
 
 AWS_ACCESS_KEY_DESCRIPTION = 'Autorotated key for effective-fishstick'
 
@@ -94,6 +96,14 @@ def _rotate_key_on_github(access_key_id, access_key_secret):
     return r1 and r2
 
 
+def _rotate_key_on_terraform(access_key_id, access_key_secret):
+    r1 = terraform_update_aws_keys(
+        'development', 'AWS_ACCESS_KEY_ID', access_key_id)
+    r2 = terraform_update_aws_keys(
+        'development', 'AWS_SECRET_ACCESS_KEY', access_key_secret)
+    return r1 and r2
+
+
 def rotatekeys():
     successes = {}
     session = _get_session()
@@ -111,7 +121,11 @@ def rotatekeys():
         github_keyrotation_result = _rotate_key_on_github(
             new_access_key_id, new_access_key_secret)
         successes['github'] = github_keyrotation_result
+        terraform_keyrotation_result = _rotate_key_on_terraform(
+            new_access_key_id, new_access_key_secret)
+        successes['terraform'] = terraform_keyrotation_result
     else:
         _deactivate_key(iam_client, new_access_key_id)
         successes['github'] = False
+        successes['terraform'] = False
     return successes
