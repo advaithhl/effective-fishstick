@@ -13,10 +13,11 @@ def _get_api():
 
 
 def _get_workspace_id(api, workspace_name):
-    workspaces = api.workspaces.list()
-    for workspace in workspaces['data']:
-        if workspace['attributes']['name'] == workspace_name:
-            return workspace['id']
+    search_param = {
+        'search': workspace_name
+    }
+    workspaces = api.workspaces.list(search=search_param)
+    return workspaces['data'][0]['id']
 
 
 def _get_varset_vars_id(api, workspace_id):
@@ -82,9 +83,9 @@ def _update_aws_keys(workspace_name, aws_access_key_id, aws_secret_access_key):
 
 def update_aws_keys(workspace_name, aws_access_key_id, aws_secret_access_key):
     try:
-        _update_aws_keys(workspace_name, aws_access_key_id, aws_secret_access_key)
+        _update_aws_keys(workspace_name, aws_access_key_id,
+                         aws_secret_access_key)
     except Exception as e:
         print(e)
         return False
     return True
-
