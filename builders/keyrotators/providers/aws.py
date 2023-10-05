@@ -97,11 +97,9 @@ def _rotate_key_on_github(access_key_id, access_key_secret):
 
 
 def _rotate_key_on_terraform(access_key_id, access_key_secret):
-    r1 = terraform_update_aws_keys(
-        'development', 'AWS_ACCESS_KEY_ID', access_key_id)
-    r2 = terraform_update_aws_keys(
-        'development', 'AWS_SECRET_ACCESS_KEY', access_key_secret)
-    return r1 and r2
+    r = terraform_update_aws_keys(
+        'workspace_dev', access_key_id, access_key_secret)
+    return r
 
 
 def rotatekeys():
