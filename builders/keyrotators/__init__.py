@@ -20,11 +20,13 @@ logger.setLevel(logging.DEBUG)
 
 # Set logger format.
 formatter = logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
+consoleFormatter = logging.Formatter(
+    '%(asctime)s:%(name)s.%(funcName)s:%(levelname)s:%(message)s')
 
 # Define console handler for printing debug logs to stdout.
 consolePrintHandler = logging.StreamHandler()
 consolePrintHandler.setLevel(logging.DEBUG)
-consolePrintHandler.setFormatter(formatter)
+consolePrintHandler.setFormatter(consoleFormatter)
 logger.addHandler(consolePrintHandler)
 
 # Define log handler for writing info logs to file.
