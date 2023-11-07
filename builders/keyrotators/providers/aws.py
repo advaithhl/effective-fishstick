@@ -40,11 +40,6 @@ def _get_session(aws_access_key_id=None, aws_secret_access_key=None, aws_region=
         region_name=aws_region
     )
 
-    try:
-        session.client('sts').get_caller_identity()
-    except ClientError:
-        logger.exception('Session validation has failed. See exception below.')
-        return None
     return session
 
 
