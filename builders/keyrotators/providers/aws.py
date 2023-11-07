@@ -66,7 +66,7 @@ def _delete_deactivated_keys(iam_client):
 @backoff.on_exception(backoff.expo, ClientError, max_time=30)
 def _get_username(iam_client):
     logger.debug(
-        'Gathering username from client object.'
+        'Gathering username from client object. '
         'This operation will be retried upon error for some time.')
     response = iam_client.get_user()
     return response['User']['UserName']
