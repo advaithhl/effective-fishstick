@@ -1,3 +1,4 @@
 from keyrotators import keyrotator
 
-keyrotator.main()
+# keyrotator.terraform_rotator()
+keyrotator.aws_rotator()
