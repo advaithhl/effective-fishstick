@@ -193,6 +193,7 @@ def rotatekeys():
         github_keyrotation_result = _rotate_key_on_github(
             new_access_key_id, new_access_key_secret)
         successes['github'] = github_keyrotation_result
+        logger.info('Updating keys on Terraform.')
         terraform_keyrotation_result = _rotate_key_on_terraform(
             new_access_key_id, new_access_key_secret)
         successes['terraform'] = terraform_keyrotation_result
