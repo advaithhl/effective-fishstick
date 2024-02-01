@@ -47,5 +47,10 @@ def aws_rotator():
         f' {success_string_printer(successes["terraform"])}')
 
 
+def no_rotation():
+    logger.error('No provider was requested to be rotated! '
+                 'Please pass any provider name as --PROVIDER for performing keyrotation.')
+
+
 def success_string_printer(success):
     return 'successful' if success else 'failed'
