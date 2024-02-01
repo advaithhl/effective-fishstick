@@ -1,0 +1,39 @@
+name: "Keyrotation - Terraform"
+
+on:
+  push: # Temporary
+  workflow_dispatch:
+
+# To be defined at repository level.
+env:
+    TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
+    TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
+
+jobs:
+    # This job rotates the Terraform API Token repo secret `TF_API_TOKEN`.
+    keyrotation_terraform:
+        name: Terraform key rotation
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.11'
+
+            - name: Install requirements
+              run: pip install -r requirements.txt
+              working-directory: builders/keyrotators
+
+            - name: Perform key rotation
+              run: python -m keyrotators --terraform
+              working-directory: builders
+
+            - name: Attach logs to action
+              uses: actions/upload-artifact@v4
+              with:
+                name: keyrotation_logs
+                path: builders/keyrotation*.log
