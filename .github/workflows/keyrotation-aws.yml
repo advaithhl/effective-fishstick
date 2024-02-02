@@ -1,7 +1,6 @@
 name: "Keyrotation - AWS"
 
 on:
-  push:
   schedule:
     - cron: "9 6 * * *" # Every day at 06:09 UTC XD
   workflow_dispatch:
