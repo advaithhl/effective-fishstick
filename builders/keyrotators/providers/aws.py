@@ -5,6 +5,7 @@ import backoff
 import boto3
 import boto3.session
 from botocore.exceptions import ClientError
+from keyrotators.backends.github import environment_mapping
 from keyrotators.backends.github import \
     set_environment_secret as github_set_environment_secret
 from keyrotators.backends.terraform import \
@@ -126,17 +127,19 @@ def _deactivate_key(iam_client, access_key_id):
     return response['ResponseMetadata']['HTTPStatusCode'] == 200
 
 
-def _rotate_key_on_github(access_key_id, access_key_secret):
+def _rotate_key_on_github(environment_name, access_key_id, access_key_secret):
+    github_environment_name = environment_mapping[environment_name]
     r1 = github_set_environment_secret(
-        'development', 'AWS_ACCESS_KEY_ID', access_key_id)
+        github_environment_name, 'AWS_ACCESS_KEY_ID', access_key_id)
     r2 = github_set_environment_secret(
-        'development', 'AWS_SECRET_ACCESS_KEY', access_key_secret)
+        github_environment_name, 'AWS_SECRET_ACCESS_KEY', access_key_secret)
     return r1 and r2
 
 
-def _rotate_key_on_terraform(access_key_id, access_key_secret):
+def _rotate_key_on_terraform(environment_name, access_key_id, access_key_secret):
+    workspace_name = f'workspace_{environment_name.lower()}'
     r = terraform_update_aws_keys(
-        'workspace_dev', access_key_id, access_key_secret)
+        workspace_name, access_key_id, access_key_secret)
     return r
 
 
@@ -150,6 +153,24 @@ def rotatekeys():
         'github': False,
         'terraform': False,
     }
+    try:
+        environment_name = os_environ['ENVIRONMENT_NAME']
+    except KeyError:
+        logger.exception("No environment variable named 'ENVIRONMENT_NAME'. "
+                         "Key rotation is ambiguous in AWS without 'ENVIRONMENT_NAME'. "
+                         "Aborting!")
+        return successes
+    else:
+        if environment_name not in environment_mapping.keys():
+            logger.error(
+                'Environment must be one of '
+                f'{list(environment_mapping.keys())}. '
+                f"Currently, it is '{environment_name}'. "
+                'Please check value of `ENVIRONMENT_NAME` variable.')
+            return successes
+        else:
+            logger.info(
+                f"Key rotation will be performed in '{environment_name}' environment.")
     logger.debug('Creating an AWS session with current credentials.')
     session = _get_session()
     if not session:
@@ -191,11 +212,11 @@ def rotatekeys():
             logger.warning('Deactivation of current key has failed.')
         logger.info('Updating keys on Github.')
         github_keyrotation_result = _rotate_key_on_github(
-            new_access_key_id, new_access_key_secret)
+            environment_name, new_access_key_id, new_access_key_secret)
         successes['github'] = github_keyrotation_result
         logger.info('Updating keys on Terraform.')
         terraform_keyrotation_result = _rotate_key_on_terraform(
-            new_access_key_id, new_access_key_secret)
+            environment_name, new_access_key_id, new_access_key_secret)
         successes['terraform'] = terraform_keyrotation_result
     else:
         logger.error('Newly generated keys failed the test.')

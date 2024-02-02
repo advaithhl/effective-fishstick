@@ -9,6 +9,14 @@ from nacl import encoding, public
 logger = logging.getLogger(__name__)
 
 
+# A dictionary which maps possible values of `ENVIRONMENT_NAME` repo variable
+# name to Github environment names.
+environment_mapping = {
+    'PROD': 'production',
+    'TEST': 'test',
+    'DEV': 'development',
+}
+
 def _get_github_api_headers(github_pat):
     logger.debug(
         'Getting Github API headers. This is usually for further API calls.')
