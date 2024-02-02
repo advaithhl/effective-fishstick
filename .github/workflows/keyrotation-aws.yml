@@ -1,0 +1,122 @@
+name: "Keyrotation - AWS"
+
+on:
+  push:
+  schedule:
+    - cron: "9 6 * * *" # Every day at 06:09 UTC XD
+  workflow_dispatch:
+
+# To be defined at repository level.
+env:
+  TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
+  TF_CLOUD_ORGANIZATION: ${{ vars.TF_CLOUD_ORGANIZATION }}
+  GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+jobs:
+  # This job rotates the AWS keys in development environment.
+  keyrotation_aws_development:
+    name: AWS Key rotation (development)
+    runs-on: ubuntu-latest
+    environment: development
+
+    # To be defined at environment level.
+    env:
+      ENVIRONMENT_NAME: ${{ vars.ENVIRONMENT_NAME }}
+      TF_WORKSPACE: ${{ vars.TF_WORKSPACE_DEV }} # Defined at repository level.
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install requirements
+        run: pip install -r requirements.txt
+        working-directory: builders/keyrotators
+
+      - name: Perform key rotation
+        run: python -m keyrotators --aws
+        working-directory: builders
+
+      - name: Attach logs to action
+        uses: actions/upload-artifact@v4
+        with:
+          name: keyrotation_logs_development
+          path: builders/keyrotation*.log
+
+  # This job rotates the AWS keys in test environment.
+  keyrotation_aws_test:
+    name: AWS Key rotation (test)
+    runs-on: ubuntu-latest
+    environment: test
+
+    # To be defined at environment level.
+    env:
+      ENVIRONMENT_NAME: ${{ vars.ENVIRONMENT_NAME }}
+      TF_WORKSPACE: ${{ vars.TF_WORKSPACE_TEST }} # Defined at repository level.
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install requirements
+        run: pip install -r requirements.txt
+        working-directory: builders/keyrotators
+
+      - name: Perform key rotation
+        run: python -m keyrotators --aws
+        working-directory: builders
+
+      - name: Attach logs to action
+        uses: actions/upload-artifact@v4
+        with:
+          name: keyrotation_logs_test
+          path: builders/keyrotation*.log
+
+  # This job rotates the AWS keys in production environment.
+  keyrotation_aws_production:
+    name: AWS Key rotation (production)
+    runs-on: ubuntu-latest
+    environment: production
+
+    # To be defined at environment level.
+    env:
+      ENVIRONMENT_NAME: ${{ vars.ENVIRONMENT_NAME }}
+      TF_WORKSPACE: ${{ vars.TF_WORKSPACE_PROD }} # Defined at repository level.
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install requirements
+        run: pip install -r requirements.txt
+        working-directory: builders/keyrotators
+
+      - name: Perform key rotation
+        run: python -m keyrotators --aws
+        working-directory: builders
+
+      - name: Attach logs to action
+        uses: actions/upload-artifact@v4
+        with:
+          name: keyrotation_logs_production
+          path: builders/keyrotation*.log
