@@ -2,7 +2,7 @@ name: "Keyrotation - Terraform"
 
 on:
   schedule:
-    - cron: "6 9 * * *" # Every day at 09:06 UTC XD
+    - cron: "30 0 * * *" # Every day at 00:30 UTC
   workflow_dispatch:
 
 # To be defined at repository level.
