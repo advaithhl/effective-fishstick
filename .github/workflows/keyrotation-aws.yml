@@ -2,7 +2,7 @@ name: "Keyrotation - AWS"
 
 on:
   schedule:
-    - cron: "30 3 * * *" # Every day at 03:30 UTC
+    - cron: "30 3 * * 6" # Every Saturday at 03:30 UTC
   workflow_dispatch:
 
 # To be defined at repository level.
