@@ -108,28 +108,3 @@ resource "aws_ecr_repository" "foo" {
   name                 = "bar2"
   image_tag_mutability = "MUTABLE"
 }
-
-resource "aws_codebuild_source_credential" "example" {
-  auth_type   = "PERSONAL_ACCESS_TOKEN"
-  server_type = "GITHUB"
-  token       = var.github_pat
-}
-
-resource "aws_codebuild_webhook" "example" {
-  project_name = aws_codebuild_project.example.name
-  build_type   = "BUILD"
-  filter_group {
-    filter {
-      type    = "EVENT"
-      pattern = "PUSH"
-    }
-
-    filter {
-      type    = "HEAD_REF"
-      pattern = "test"
-    }
-  }
-}
-
-data "aws_region" "current" {}
-output "current_region" { value = data.aws_region.current.name }
