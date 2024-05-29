@@ -1,4 +1,4 @@
-variable "github_pat" {
+variable "GITHUB_PAT" {
   type = string
   sensitive = true
 }

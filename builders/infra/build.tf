@@ -112,7 +112,7 @@ resource "aws_ecr_repository" "foo" {
 resource "aws_codebuild_source_credential" "example" {
   auth_type   = "PERSONAL_ACCESS_TOKEN"
   server_type = "GITHUB"
-  token       = var.github_pat
+  token       = var.GITHUB_PAT
 }
 
 resource "aws_codebuild_webhook" "example" {
