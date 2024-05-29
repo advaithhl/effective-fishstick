@@ -1,0 +1,10 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Skipping installation phase..."  # Optional message
+
+  build:
+    commands:
+      - echo "Hello world!"
