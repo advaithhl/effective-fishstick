@@ -8,3 +8,4 @@ phases:
   build:
     commands:
       - echo "Hello world!"
+      - echo "We are working in '${AWS_REGION}'."
