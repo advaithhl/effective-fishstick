@@ -74,9 +74,8 @@ resource "aws_codebuild_project" "example" {
     }
 
     environment_variable {
-      name  = "SOME_KEY2"
-      value = "SOME_VALUE2"
-      type  = "PARAMETER_STORE"
+      name  = "AWS_REGION"
+      value = var.AWS_REGION
     }
   }
 
