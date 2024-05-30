@@ -75,7 +75,7 @@ resource "aws_codebuild_project" "example" {
 
     environment_variable {
       name  = "AWS_REGION"
-      value = var.AWS_REGION
+      value = format("\"%s\"", var.AWS_REGION)
     }
   }
 
